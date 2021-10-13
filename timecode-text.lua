@@ -19,6 +19,8 @@ frame_text    = ""          -- Frame text (String)
 source_name   = ""          -- Text source name
 time_mode     = "24 Hour"   -- Clock mode
 show_frame    = false       -- Enable showing frames ":FF"
+show_date     = false       -- Enable showing date (yyyy-mm-dd)
+show_utc      = false       -- Enable showing date and time as UTC
 pre_text      = ""          -- Text before timecode
 post_text     = ""          -- Text after timecode
 keep_updated  = false        -- Update when not in program
@@ -27,14 +29,17 @@ keep_updated  = false        -- Update when not in program
 debug         = false       -- Enable or disable script output
 
 -- Local Settings
-Format12hr    = "%I:%M:%S"
+Format13hr    = "%I:%M:%S"
 Format24hr    = "%H:%M:%S"
 FormatAmPm    = "%p"
+
+FormatDate    = "%Y-%m-%d "
+FormatUtc     = "!"
 
 -- Description
               -- Logo Image - Base64 Encoded Image - https://www.base64-image.de/
 img_logo      = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALwAAAA3BAMAAABEED2DAAAAGFBMVEUAAAAAAAD+//5XV1ebm5sqKysZGhrKysuA4j2YAAAAAXRSTlMAQObYZgAABChJREFUWMPtlk1z2jAQhvsTuvjjjiTqsyxoz5YVchbU5Gw+pndD/n/flQx1GSATmmbaTnfaQa8kPzGr1bt86IPeOHrse+J3TeOpQWBIlLUUI8fMCoueZ3dRcWBrS6v44IqVZ7W6ii+F+EQCgaGmhe7xCWYkWTEhi4Ulq+P8PAvDEjM5HobK1XW8c4UvnHO0EXKAd52raVrMyercLpWDCtsPTu0YnxSu00/KFY2kJ3kd7/HWikd2X+iIPy4QKZ7eiuWEYoQ/1jBt9ExPY3zfcibzTr+MT1VbTi7hhRjikfQs4CtKx9iT7eQa+iremEIXxvh0TEnEb4z5PMB/UeVSGnPC0xAPpfDyt45W8tHqH/iFEJMBHhQ+2qt4LN3Al9KTQrmlQER8hnIb4HOPt2+aq3hpqxv4pdBMIcZfzD2Gt3O/uJV7/0VGPJJzHX9/5SSF5rqP+INz+oSPdY/hWd0XUK+pe4GIeAyqE/7arYVS12/tP+SYb4n/Hy8H/dZ4F3zJNolbEp2YVQWl4ZeqXUQbxWK/VUbbl7DfEQZjqDnm58RqEm4X4wb46WPhdGIPbSppOynZDcrDo0yEsw/whk4LOEVLiE0BZaE2AY+dFVThE7xIiqY5D95QuEc5TE5yNL7Cl5NSQ+CJLlX0TcLZykpQH4tnKseWn1At8Gwa1sPHvoVGYgl7yc4UDOMiXhxExCsik04oYfxogK8o0QEvqhMeVglLkxHvaQE8XcZLISflrPGMpwEePabH7xpvoZCNnRo9NCu87FLM2MsG+ObrZfzYLvlox+d4nFWPX4TDrBJpaxxtPOg9d5UBHtsfLuPNZlLWRp/jjfE9foPcG6MTuS3UaG9mZK3UGWx/gC+6fXsZT8kp93Q596N4tDK3fe6XouVSHCZnLekFfJvbVEb8eoCf07rH06jHezsfJId7osqEPsdn5b6N+Bpf3tZTlQhT7he16TSSY8LX3SrTVRYq1v2ed/q0aE74L9IUM4WPc/zPt3bLd7EUhf751uZWyPbs1vrczk54UGR2Xvf5KvzOptzj365B4UG1lDUr/D/9KufYQfEGfmKVYeB3mGxZ4ZNOv8Pj9r/cMf/H+7TGj38Efuppq2t8ssCQUu2g2rjo5pQff9umDt1q6iBfgS81nCvewRVR9Bw4kGeV8PVd80Vmdey14j58JoGXWVeJ563wQe25Geq8Cw3n2K0Q9+DzGkAxFZVQpfBBwVUrG1JV/zKeY2GFrYQtOh/UnoEx8/fi2TEFIuKNQu63n5gSDZHW7KYcx2ZYvQp/cLZCd+si/nONbpVUwMfK6TQqR7UBf3A1Wef0/cmJzXCQg3JMlLP65dxncoiH6pthyy1V/Q68bOzYPizFLfz9yck7oSgVYn9/5Sw9bbQhMkFtPCVBtXHRfKbcGB1EookX/ihLe0P8d01J5Amxe24GAAAAAElFTkSuQmCC"
-version       = "Version 1.00 - <a href='https://github.com/spessoni/obs-timecode-text'>spessoni</a>"
+version       = "Version 1.01 - <a href='https://github.com/spessoni/obs-timecode-text'>spessoni</a>"
 description   = [[
 <center><img width='188' height='55' src=']] .. img_logo .. [['/><br>]] .. version .. [[</center>
 <h3>Generates Real-Time Clock (RTC) Timecode on a text source</h3>
@@ -62,12 +67,25 @@ function set_text()
 	if time_mode == "12 Hour + AM/PM" or time_mode == "12 Hour" then
 		format = Format12hr
 	end
+
+    if ( show_date ) then
+       format = FormatDate .. format
+    end
+
+    if ( show_utc ) then
+       format = FormatUtc .. format
+    end
+
 	local time = os.date(format)
 
 	-- Get AM/PM if requested
 	local ampm = ""
 	if time_mode == "12 Hour + AM/PM" then
-		ampm = " " .. os.date(FormatAmPm)
+        format = FormatAmPm
+        if ( show_utc ) then
+            format = FormatUtc .. format
+        end
+		ampm = " " .. os.date(format)
 	end
 
 	-- Update frame counter if enabled
@@ -147,6 +165,12 @@ function script_properties()
 	local p_show_frame = obs.obs_properties_add_bool(props, "show_frame", "Show Frames")
 	obs.obs_property_set_long_description(p_show_frame, "<b>NOTE:</b> This may require more CPU usage")
 
+    -- Show Date Checkbox
+	local p_show_date = obs.obs_properties_add_bool(props, "show_date", "Show Date")
+
+    -- Show UTC Checkbox
+	local p_show_utc = obs.obs_properties_add_bool(props, "show_utc", "Show UTC(GMT)")
+
 	-- Prefix Text
 	obs.obs_properties_add_text(props, "pre_text", "Prefix Text", obs.OBS_TEXT_DEFAULT)
 
@@ -165,6 +189,8 @@ function script_update(settings)
 	source_name  = obs.obs_data_get_string(settings, "source")
 	time_mode    = obs.obs_data_get_string(settings, "time_mode")
 	show_frame   = obs.obs_data_get_bool(settings, "show_frame")
+	show_date    = obs.obs_data_get_bool(settings, "show_date")
+	show_utc     = obs.obs_data_get_bool(settings, "show_utc")
 	pre_text     = obs.obs_data_get_string(settings, "pre_text")
 	post_text    = obs.obs_data_get_string(settings, "post_text")
 	keep_updated = obs.obs_data_get_bool(settings, "keep_updated")
@@ -177,7 +203,7 @@ function script_update(settings)
 	if (source_active or keep_updated) and not show_frame then
 		if debug then print ("script_update(): Timer Callback ENABLED") end
 		cb_toggle(true)
-	else 
+	else
 		if debug then print ("script_update(): Timer Callback DISABLED") end
 		cb_toggle(false)
 	end
@@ -189,6 +215,8 @@ function script_defaults(settings)
 	obs.obs_data_set_default_string(settings, "source", "")
 	obs.obs_data_set_default_string(settings, "time_mode", "24 Hour")
 	obs.obs_data_set_default_bool(settings, "show_frame", false)
+	obs.obs_data_set_default_bool(settings, "show_date", false)
+	obs.obs_data_set_default_bool(settings, "show_utc", false)
 	obs.obs_data_set_default_string(settings, "pre_text", "")
 	obs.obs_data_set_default_string(settings, "post_text", "")
 	obs.obs_data_set_default_bool(settings, "keep_updated", false)
