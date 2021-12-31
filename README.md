@@ -15,7 +15,7 @@ Generate timecode (HH:MM:SS:FF) for a text source based on the computers RTC (Re
 
 ![Timecode Demo](docs/tc-animation.gif?raw=true)
 
-The script was written to create accurate timecode which is based on the computer's time of day.  It can be used for creating slates, time labels on security footage, live cameras, etc. It is useful for checking latency with other live sources and encoders.
+The script was written to create accurate timecode which is based on the computer's time of day.  It can be used for creating slates, time labels on security footage, live cameras, etc. It is useful for checking latency with other live sources and encoders. The Date and Time will be shown with your local time offsets unless *show UTC(GMT)* is checked.
 
 ## Settings
 
@@ -24,6 +24,8 @@ The script was written to create accurate timecode which is based on the compute
 * **Text Source**: This is the source to which the timecode text will be applied.
 * **Mode**: Select the clock mode of either 24 Hour, 12 Hour, or 12 Hour with AM/PM displayed.
 * **Show Frames**: Checking this will display the frames component (:FF) of the timecode. This could potentially slow down older computers because every frame must be rendered. You can keep an eye on this with the CPU usage box at the bottom right corner of the OBS application.
+* **Show Date**: The date will be displayed when this is checked. (YYYY-MM-DD)
+* **Show UTC(GMT)**: When checked, the time and date will be displayed in Coordinated Universal Time (UTC). Coordinated Universal Time or UTC is the primary time standard by which the world regulates clocks and time. It is not adjusted for daylight saving time. It is effectively a successor to Greenwich Mean Time (GMT). 
 * **Prefix Text**: This text will be applied *in front of the timecode*. You may want to add a space at the end, if needed, to add padding to the text.
 * **Suffix Text**: This text will be applied *at the end of the timecode*.  You may want to add a space at the end, if needed, to add padding to the text.
 * **Update when not in program**: When checked, the time will continue to be updated even when not in program. This can be useful when making isolated recordings for later logging, keeping timecode running on the OBS multiviewer, sending via NDI feeds, ect. By default it is disabled to minimize CPU load, especially with "*show frames*" checked.
@@ -47,3 +49,7 @@ The Lua `os.date` function only reliably returns seconds.  To get frame accuracy
 * **Timecode does not advance:** Make sure the source is in program and currently active or enable "Update when not in program". Also make sure the correct source is set and hasn't been renamed.
 * **Clock is not correct:** Make sure your computer's clock is displaying correctly, including time zone and daylight savings / standard time. You may also want to synchronize your computer's clock with an internet time server.
 * **My CPU usage goes up when I select frames:** Unfortunately this is unavoidable. Each frame is required to be processed and rendered. On most machines, this will only add 1-2% max to the CPU processing load.
+
+## Contributors
+* **Scott Pessoni** ([spessoni](https://github.com/spessoni)): Initial Release / Project Maintainer
+* **Iljun Lee** ([bozlo](https://github.com/bozlo)): Added Date and UTC options
