@@ -29,7 +29,7 @@ keep_updated  = false        -- Update when not in program
 debug         = false       -- Enable or disable script output
 
 -- Local Settings
-Format13hr    = "%I:%M:%S"
+Format12hr    = "%I:%M:%S"
 Format24hr    = "%H:%M:%S"
 FormatAmPm    = "%p"
 
