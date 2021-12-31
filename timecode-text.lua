@@ -3,7 +3,8 @@ OBS RTC Timecode Generator for Text Sources
 Generate timecode (HH:MM:SS:FF) for a text source based on the computers RTC (Real-Time Clock)
 For updates, documentation and more information see the project page at: https://github.com/spessoni/obs-timecode-text
 ----------------------------------
-v1.0 (2021/06/08): Initial Release
+v1.0 (2021/06/08): Initial Release (spessoni)
+v1.01 (2021/12/30): Added Date & UTC (bozlo)
 ]]
 
 obs           = obslua
